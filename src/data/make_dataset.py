@@ -1,30 +1,77 @@
-# -*- coding: utf-8 -*-
-import click
-import logging
-from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
+import pandas as pd
+from csv import reader
 
 
-@click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
-def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
+def load_csv(filename):
     """
-    logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
+    Load data from a csv file
+
+    Parameters
+    ----------
+    filename: str
+      Complete path of input dataset
+
+    Returns
+    -------
+    List
+      List of lists where each element represents a single record
+    """
+    dataset = list()
+    with open(filename, "r") as f:
+        csv_reader = reader(f)
+        for row in csv_reader:
+            if not row:
+                continue
+            dataset.append(row)
+    return dataset
 
 
-if __name__ == '__main__':
-    log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
+def time_index(data, col_ts, ts_units):
+    """
+    Convert unix ts to date-time and re-index data-frame
 
-    # not used in this stub but often useful for finding various files
-    project_dir = Path(__file__).resolve().parents[2]
+    Parameters
+    ----------
+    data: Pandas DataFrame
+      Input pandas data frame object
+    col_ts: str
+      Column name with timestamp data
+    ts_units: str
+      Units of the timestamp. This could be 's' as seconds, refer to documentation for more options.
 
-    # find .env automagically by walking up directories until it's found, then
-    # load up the .env entries as environment variables
-    load_dotenv(find_dotenv())
+    Returns
+    -------
+    DataFrame
+      Pandas DataFrame object with dateTime index
+    """
+    data[col_ts] = pd.to_datetime(data[col_ts], unit=ts_units)
+    data.set_index(col_ts, inplace=True)
+    return data
 
-    main()
+
+def rename_cols(data, new_col_names):
+    """
+    Rename columns
+    """
+    data.columns = new_col_names
+    return data
+
+
+fileName = '.../data/raw/ship_data.csv'
+dataset = load_csv(fileName)
+print("Loaded data with {0} rows and {1} columns".format(len(dataset), len(dataset[0])))
+
+# Convert to pandas dataframe
+colNames = dataset[0]
+df = pd.DataFrame(dataset[1:], columns=colNames)
+
+df = time_index(df, 'Time', 's')
+new_col_names = ['fuelConsumption', 'HFO', 'MGO', 'draftForward', 'draftAft', 'draftMid1', 'draftMid2',
+              'shaftSpeed', 'shaftTorque', 'shaftPower', 'speedGround', 'speedWater', 'heading', 'rudderAngle',
+              'AWS', 'AWD', 'TWS', 'TWD', 'temp', 'currentDirection', 'currentSpeed', 'waterDepth', 'waveHeight',
+              'wavePeriod', 'waveDirection']
+
+df = rename_cols(df, new_col_names)
+
+df.dropna(how='any', inplace=True)
+
