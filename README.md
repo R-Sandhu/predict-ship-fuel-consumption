@@ -1,4 +1,4 @@
-Predict the fuel consumption of ships for optimizing operational efficiency.
+Predict the fuel consumption of ships to optimize operational efficiency.
 ============================================================================
 
 Objective:
