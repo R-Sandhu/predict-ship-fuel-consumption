@@ -1,5 +1,5 @@
-Predict the fuel consumption of ships for voyages to help ships operate at most efficient level.
-================================================================================================
+Predict the fuel consumption of ships for optimizing operational efficiency.
+============================================================================
 
 Objective:
 ----------
@@ -29,3 +29,19 @@ The project's folder structure follows [cookie-cutter](https://github.com/driven
 
 
 - requirement: A text file with libraries used in this project and their versions.
+
+
+Conclusions:
+------------
+- **Extra Trees Regression model, with tuned hyper-parameters outperformed the other predictive models which were tested during this experiment. Performance of the model on unseen data as indicated by Root Mean Square Error is 0.909**
+
+
+- **Top contributing factors for fuel consumption rate are shaft speed, speed of ship in water, mean draft and type of fuel.**
+
+
+- **The root mean squared error evaluation scores observed during model training using cross-validation is superior to similar scores obtained from other models.**
+
+
+- **The model can be scored on a range of perdictor values to estimate the fuel consumption rate for this ship. However, the generalization of this model to predict fuel consumption rate for other ships will require further analysis.**
+
+
