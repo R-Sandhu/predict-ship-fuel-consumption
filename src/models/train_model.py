@@ -1,4 +1,4 @@
-from .data.make_dateset import load_csv
+from make_dateset import load_csv
 import numpy as np
 from csv import reader
 from sklearn.preprocessing import StandardScaler
