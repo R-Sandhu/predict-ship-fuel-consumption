@@ -73,5 +73,25 @@ new_col_names = ['fuelConsumption', 'HFO', 'MGO', 'draftForward', 'draftAft', 'd
 
 df = rename_cols(df, new_col_names)
 
+df = df.replace(r'^\s*$', np.nan, regex=True).astype(np.float64)
+
+# Drop null values and select features
 df.dropna(how='any', inplace=True)
+
+df.dropna(how='any', inplace=True)
+
+df['meanDraft'] = df[['draftAft', 'draftForward', 'draftMid1', 'draftMid2']].mean(axis=1)
+
+cols_to_drop = ['MGO', 'draftForward', 'draftAft', 'draftMid1', 'draftMid2', 'shaftTorque', 'shaftPower',
+                'speedGround', 'AWS', 'AWD', 'currentDirection', 'currentSpeed', 'waterDepth',
+                'waveHeight', 'wavePeriod', 'waveDirection']
+
+df.drop(columns=cols_to_drop, inplace=True)
+
+# Remove data anomalies
+conditionEval = (df['heading'] < 0) | (df['temp'] < -273) | (df['fuelConsumption'] < -0.5)
+df.drop(df[conditionEval].index, inplace=True)
+
+df.loc[df['fuelConsumption'] < 0, 'fuelConsumption'] = 0
+
 
